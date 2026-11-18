@@ -1,16 +1,17 @@
 # My commit message
 Modified search so that it matches "contains" not "is exactly"
 
-# Comment on claudes message
-When writing commit messages manually, developers are often eager to wrap up a task, move on to the next ticket, or clear their workspace before the end of the day. This frequently leads to vague, rushed one-liners like "fix bug," "update logic," or "minor changes." While those placeholders might make sense in the immediate moment, they become completely opaque weeks or months later when someone is trying to trace a regression, review a pull request, or understand the history of a file.
+# Comment on Claude's message
 
-Claude solves this problem by reading the actual `git diff` line by line before generating a single word. Because its output is directly grounded in the exact code modifications rather than a developer's tired memory, it captures the full scope of the work without skipping over secondary edits or side effects that are easy to forget. Instead of forcing you to open the diff just to figure out what happened, it synthesizes the changes into a structured, self-contained summary.
+Claude's commit message (commit fd4f101) reads:
 
-Specifically, a well-crafted message from Claude breaks down the update across several useful dimensions:
+> Fix search matching and add empty-term usage message
+>
+> - store.matches now finds notes containing the term instead of requiring an exact text match.
+> - `notes search` with no term prints a usage hint instead of searching for an empty string.
 
-* **What changed at a granular level:** It summarizes the concrete modifications made to functions, classes, configurations, or UI components rather than hiding behind generic phrasing.
-* **Which files were affected:** By explicitly referencing the modified modules or paths, it immediately gives you a mental map of the blast radius for that commit.
-* **Why the change was necessary:** Combining the code changes with the context of your session, it explains the underlying intent—such as resolving a specific edge case, refactoring for performance, or aligning with a new API contract.
-* **The downstream impact:** If a change alters behavior, adds a dependency, or requires follow-up steps, those details surface right in the commit body instead of getting buried.
+Compared with my message, Claude's is more complete on the *what*. My message covers only the first change, the switch from exact match to "contains". Claude's names the function that changed (`store.matches`) and also records the second change, the empty-term guard in `notes search`, which I left out. It describes both changes in terms of old vs. new behavior.
 
-Ultimately, this turns your Git history from a noisy log of cryptic timestamps into reliable, searchable documentation. Whether you are doing a `git blame` six months down the road, preparing release notes, or handing off a branch to a teammate for code review, everything you need to understand the commit is already written down in one place.
+On the *why*, neither message explains the reason for the fix. Claude's message does not say that searching for "milk" failed to find "buy milk", so the user had no way to find a note by a partial word. It also does not say that `String.includes("")` is true for every note, which is why the empty-term guard was needed once the matching changed. The phrases "instead of requiring an exact text match" and "instead of searching for an empty string" point at the problem, but they only describe what changed. They do not state the reason. My own message has the same gap.
+
+So Claude's commit message is better than mine at describing the change, but it does not explain why the fix was needed. A message that does would add a body such as: "Search required an exact match, so `notes search milk` could not find \"buy milk\". Matching now uses `includes`, which also matches an empty term against every note, so the empty term is rejected up front."
